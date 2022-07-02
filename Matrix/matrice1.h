@@ -5,7 +5,7 @@
 
 template<typename T> class matrica
 {
-private:
+public:
 	int m;
 	int n;
 	T element;
@@ -86,7 +86,7 @@ public:
 	}
 
 	// copy constructor (deep copy)
-	matrica(matrica& matr)
+	matrica(const matrica& matr)
 	{
 		this->m = matr.m;
 		this->n = matr.n;
@@ -127,6 +127,37 @@ public:
 		}
 
 		return os;
+	}
+
+	// >> overload
+	friend void operator>>(matrica<T>& matr, const int m)
+	{
+		if (matr.m != matr.n)
+		{
+			std::cout << "Operaciju >> nije moguce izvrsiti!\n";
+		}
+		else
+		{
+			if (m > 1)
+			{
+				matrica<T> temp(matr);
+				for (int i = m; i > 1; i--)
+				{
+					matr *= temp;
+				}
+			} 
+			if (m == 0)
+			{
+				for (int i = 0; i < matr.m; i++)
+				{
+					for (int j = 0; j < matr.n; j++)
+					{
+						matr.mat[i][j] = 1;
+					}
+				}
+			}
+		}
+
 	}
 
 	// += overload
@@ -202,8 +233,97 @@ public:
 		return *this;
 	}
 
+	// = overload
+	matrica<T>& operator=(const matrica<T>& matr)
+	{
+		if (this->m != matr.m || this->n != matr.n)
+		{
+			std::cout << "Operaciju = nije moguce izvrsiti!\n";
+			return *this;
+		}
+
+		for (int i = 0; i < this->m; i++)
+		{
+			for (int j = 0; j < this->n; j++)
+			{
+				this->mat[i][j] = matr.mat[i][j];
+			}
+		}
+		return *this;
+	}
+
+	// + overload
+	matrica<T> operator+(const matrica<T>& matr) const
+	{
+		if (this->m != matr.m || this->n != matr.n)
+		{
+			std::cout << "Operaciju + nije moguce izvrsiti!\n";
+			matrica<T> temp;
+			return temp;
+		}
+		matrica<T> temp(this->m, this->n, DEFAULT_ELEMENT);
+
+		for (int i = 0; i < this->m; i++)
+		{
+			for (int j = 0; j < this->n; j++)
+			{
+				temp.mat[i][j] = this->mat[i][j] + matr.mat[i][j];
+			}
+		}
+		return temp;
+	}
+
+	// - overload
+	matrica<T> operator-(const matrica<T>& matr) const
+	{
+		if (this->m != matr.m || this->n != matr.n)
+		{
+			std::cout << "Operaciju - nije moguce izvrsiti!\n";
+			matrica<T> temp;
+			return temp;
+		}
+		matrica<T> temp(this->m, this->n, DEFAULT_ELEMENT);
+
+		for (int i = 0; i < this->m; i++)
+		{
+			for (int j = 0; j < this->n; j++)
+			{
+				temp.mat[i][j] = this->mat[i][j] - matr.mat[i][j];
+			}
+		}
+		return temp;
+	}
+
+	// * overload
+	matrica<T> operator*(const matrica<T>& matr) const
+	{
+		if (this->n != matr.m)
+		{
+			std::cout << "Operaciju * nije moguce izvrsiti!\n";
+			matrica<T> result;
+			return result;
+		}
+
+		matrica<T> result(this->m, matr.n, DEFAULT_ELEMENT);
+
+		for (int i = 0; i < this->m; i++)
+		{
+			for (int j = 0; j < matr.n; j++)
+			{
+				result.mat[i][j] = 0;
+
+				for (int k = 0; k < matr.m; k++)
+				{
+					result.mat[i][j] += this->mat[i][k] * matr.mat[k][j];
+				}
+			}
+		}
+
+		return result;
+	}
+
 	// == overload
-	bool operator==(matrica<T>& matr)
+	bool operator==(const matrica<T>& matr) const
 	{
 		if (this->m != matr.m || this->n != matr.n)
 		{
@@ -224,11 +344,11 @@ public:
 	}
 
 	// != overload
-	bool operator!=(matrica<T>& matr)
+	bool operator!=(const matrica<T>& matr) const
 	{
 		if (this->m != matr.m || this->n != matr.n)
 		{
-			return true;
+			return true;;
 		}
 
 		for (int i = 0; i < this->m; i++)
@@ -237,11 +357,11 @@ public:
 			{
 				if (this->mat[i][j] != matr.mat[i][j])
 				{
-					return true;
+					return true;;
 				}
 			}
 		}
-		return false;
+		return false;;
 	}
 
 	// int() conversion operator
@@ -355,6 +475,6 @@ void for_each(Iter start, Iter kraj, Funktor f, int razina)
 {
 	for (Iter i = start; i != kraj; ++i)
 	{
-		f(razina, **i);
+		f(razina, *i);
 	}
 }
